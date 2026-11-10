@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.metrics import silhouette_score
+from pathlib import Path
 
 base_dir = Path(__file__).resolve().parent
 csv_path = base_dir / "data" / "Mall_Customers.csv"

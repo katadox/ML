@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score,confusion_matrix
+from pathlib import Path
 # Load dataset from URL or local path
 base_dir = Path(__file__).resolve().parent
 csv_path = base_dir / 'data' / 'pima-indians-diabetes-data.csv'

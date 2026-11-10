@@ -7,7 +7,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-
+from pathlib import Path
+import numpy as np
 base_dir = Path(__file__).resolve().parent
 csv_path = base_dir / 'data' / 'fashion-mnist.csv'
 
