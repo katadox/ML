@@ -11,17 +11,26 @@ from sklearn.metrics import mean_squared_error, r2_score
 data = load_diabetes(as_frame=True)
 df = data.frame
 print(df.head())
-x = [0, 1, 2]
-linear = [0.8, 0.5, 0.9]
-ridge = [0.7, 0.4, 0.8]
-lasso = [0.6, 0.3, 0.7]
+import matplotlib.pyplot as plt
+import numpy as np
 
-plt.bar([-0.2, 0.8, 1.8], linear, 0.2, label='Linear')
-plt.bar(x, ridge, 0.2, label='Ridge')
-plt.bar([0.2, 1.2, 2.2], lasso, 0.2, label='Lasso')
+x = ['age','sex','bmi','bp','s1','s2','s3','s4','s5','s6']
 
-plt.xticks(x, ['BMI', 'Age', 'BP'])
-plt.ylabel('Coefficient')
-plt.title('Regression Coefficients')
+a = [2,-12,26,17,-44,25,8,13,35,3]
+b = [2,-10,24,15,-5,-4,-9,7,19,4]
+c = [0,-8,26,15,-5,0,-11,0,22,2]
+
+w = 0.25
+p = np.arange(len(x))
+
+plt.bar(p-w, a, w, label='Linear')
+plt.bar(p, b, w, label='Ridge')
+plt.bar(p+w, c, w, label='Lasso')
+
+plt.xticks(p, x, rotation=45)
+plt.axhline(0, color='black')
+plt.ylabel('Coefficient Value')
+plt.title('Coefficient Comparison: Linear vs Ridge vs Lasso')
 plt.legend()
+plt.tight_layout()
 plt.show()
