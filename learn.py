@@ -1,73 +1,33 @@
-
-from cmath import exp
-
-
-
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.datasets import fetch_california_housing
+import time
+from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import StandardScaler
-# Load dataset
-data = fetch_california_housing(as_frame=True)
-df = data.frame
-print(df.head())
-print(df.describe())
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score,classification_report
 
-# Select single feature
-X = df[['AveRooms']].values
-y = df['MedHouseVal'].values
-# Clip outliers (optional, for better visualization)
-mask = (X.flatten() < 10)
-X, y = X[mask], y[mask]
-# Train-test split (80/20)
-X_train, X_test, y_train, y_test = train_test_split(
-X, y, test_size=0.2, random_state=42)
+mnist=fetch_openml('mnist_784',version=1,as_frame=False, parser='liac-arff')
+x,y=mnist.data.astype(np.float32)/255.0,mnist.target.astype(int)
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.15,random_state=42)
+print("Dataset processing complete.")
+history_loss={}
+test_accuracies={}
+activations={'logistic','tanh','relu'}
+for act in activations:
+    mlp=MLPClassifier(hidden_layer_sizes=(64,32),activation=act,max_iter=25,random_state=42)
+    mlp.fit(x_train,y_train)
+    history_loss[act]=mlp.loss_curve_
+    test_accuracies[act]=accuracy_score(y_test,mlp.predict(x_test))
+print(test_accuracies)
 
-# Feature scaling
-scaler = StandardScaler()
-X_train_sc = scaler.fit_transform(X_train)
-X_test_sc = scaler.transform(X_test)
+plt.figure(figsize=(10,5))
+for act in activations:
+    print(f"accuracy for {'sigmoid' if act =='logistic' else act}:"f"{test_accuracies[act]:4f}")
+    plt.plot(history_loss[act],label=act)
 
-def gradient_descent(X, y, lr=0.01, epochs=1000):
-    m = len(y)
-    theta0, theta1 = 0.0, 0.0
-    for _ in range(epochs):
-        y_p = theta0 + theta1 * X.flatten()
-        error = y_p - y
-        theta0 -= lr * (1/m) * np.sum(error)
-        theta1 -= lr * (1/m) * np.sum(error * X.flatten())
-    return theta0, theta1
-t0_gd, t1_gd = gradient_descent(X_train_sc, y_train, lr=0.01, epochs=1000)
-print(f'GD => theta0={t0_gd:.4f}, theta1={t1_gd:.4f}')
-
-def normal_equation(X, y):
-    # Add bias column of ones
-    X_b = np.c_[np.ones(len(X)), X]
-    theta = np.linalg.pinv(X_b.T @ X_b) @ X_b.T @ y
-    return theta[0], theta[1]
-t0_ne, t1_ne = normal_equation(X_train_sc, y_train)
-print(f'NE => theta0={t0_ne:.4f}, theta1={t1_ne:.4f}')
-
-for name, t0, t1 in [('Gradient Descent', t0_gd, t1_gd),
-('Normal Equation', t0_ne, t1_ne)]:
-    y_pred = t0 + t1 * X_test_sc.flatten()
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-    print(f'{name:20s} MSE={mse:.4f} RMSE={mse**0.5:.4f} R2={r2:.4f}')
-
-fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=True)
-for ax, (name, t0, t1) in zip(axes, [
-    ('Gradient Descent', t0_gd, t1_gd),
-    ('Normal Equation', t0_ne, t1_ne)]):
-    ax.scatter(X_test_sc, y_test, alpha=0.4, s=8, color='steelblue', label='Data')
-    xs = np.linspace(X_test_sc.min(), X_test_sc.max(), 200)
-    ax.plot(xs, t0 + t1*xs, color='crimson', lw=2, label='Fitted Line')
-    ax.set_title(name)
-    ax.set_xlabel('AveRooms (Scaled)')
-    ax.set_ylabel('Median House Value')
-    ax.legend()
-plt.suptitle('Linear Regression: Gradient Descent vs Normal Equation')
-plt.tight_layout()
+plt.title('loss convergence comparison')
+plt.xlabel('epochs')
+plt.ylabel('loss value')
+plt.legend()
 plt.show()
