@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, f1_score
 
-df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'data', 'fashion-mnist.csv'))
+#df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'data', 'fashion-mnist.csv'))
 
 k = [1, 3, 5, 11]
 accuracy = [0.801, 0.804, 0.811, 0.803]
