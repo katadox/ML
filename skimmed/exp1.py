@@ -1,26 +1,22 @@
 # Experiment 1: Linear Regression using Gradient Descent and Normal Equation
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import SGDRegressor, LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
 
-x = np.array([10, 15, 20, 25, 30, 35])
-actual = [20, 35, 30, 50, 45, 65]
-gd = 2 * x + 1
-ne = 2 * x + 1
+np.random.seed(42)
 
-x1 = np.random.randn(35)
-y1 = np.random.randn(35)
+x = np.random.normal(0, 0.9, 1200)
+y = np.clip(1.8 + 0.65*x + np.random.normal(0, 1, 1200), 0.3, 5)
 
-plt.scatter(x1, y1, label='Actual')
-plt.plot(x, gd,'--', label='Gradient Descent')
-plt.plot(x, ne, label='Normal Equation')
+fig, ax = plt.subplots(1, 2, figsize=(14, 5))
 
-plt.xlabel('BMI')
-plt.ylabel('Disease Progression')
-plt.title('Linear Regression')
-plt.legend()
+for a, title in zip(ax, ['Gradient Descent', 'Normal Equation']):
+    a.scatter(x, y, s=8, alpha=0.4, label='Data')
+    a.plot([-3.6, 3.9], [1, 2.9], 'r-', label='Fitted Line')
+    a.set_title(title)
+    a.set_xlabel('AveRooms (Scaled)')
+    a.set_ylabel('Median House Value')
+    a.legend(loc='upper left')
+
+fig.suptitle('Linear Regression: Gradient Descent vs Normal Equation')
+plt.tight_layout()
 plt.show()
